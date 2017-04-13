@@ -1,0 +1,40 @@
+# Project: BitmapWriter
+# Makefile created by Dev-C++ 5.11
+
+CPP      = g++.exe
+CC       = gcc.exe
+WINDRES  = windres.exe
+OBJ      = main.o windows_bitmap.o device_independent_bitmap.o binary_writer.o raster_image.o
+LINKOBJ  = main.o windows_bitmap.o device_independent_bitmap.o binary_writer.o raster_image.o
+LIBS     = -L"C:/Program Files (x86)/Dev-Cpp/MinGW64/lib32" -L"C:/Program Files (x86)/Dev-Cpp/MinGW64/x86_64-w64-mingw32/lib32" -static-libgcc -m32
+INCS     = -I"C:/Program Files (x86)/Dev-Cpp/MinGW64/include" -I"C:/Program Files (x86)/Dev-Cpp/MinGW64/x86_64-w64-mingw32/include" -I"C:/Program Files (x86)/Dev-Cpp/MinGW64/lib/gcc/x86_64-w64-mingw32/4.9.2/include"
+CXXINCS  = -I"C:/Program Files (x86)/Dev-Cpp/MinGW64/include" -I"C:/Program Files (x86)/Dev-Cpp/MinGW64/x86_64-w64-mingw32/include" -I"C:/Program Files (x86)/Dev-Cpp/MinGW64/lib/gcc/x86_64-w64-mingw32/4.9.2/include" -I"C:/Program Files (x86)/Dev-Cpp/MinGW64/lib/gcc/x86_64-w64-mingw32/4.9.2/include/c++"
+BIN      = BitmapWriter.exe
+CXXFLAGS = $(CXXINCS) -m32
+CFLAGS   = $(INCS) -m32
+RM       = rm.exe -f
+
+.PHONY: all all-before all-after clean clean-custom
+
+all: all-before $(BIN) all-after
+
+clean: clean-custom
+	${RM} $(OBJ) $(BIN)
+
+$(BIN): $(OBJ)
+	$(CPP) $(LINKOBJ) -o $(BIN) $(LIBS)
+
+main.o: main.cpp
+	$(CPP) -c main.cpp -o main.o $(CXXFLAGS)
+
+windows_bitmap.o: windows_bitmap.cpp
+	$(CPP) -c windows_bitmap.cpp -o windows_bitmap.o $(CXXFLAGS)
+
+device_independent_bitmap.o: device_independent_bitmap.cpp
+	$(CPP) -c device_independent_bitmap.cpp -o device_independent_bitmap.o $(CXXFLAGS)
+
+binary_writer.o: binary_writer.cpp
+	$(CPP) -c binary_writer.cpp -o binary_writer.o $(CXXFLAGS)
+
+raster_image.o: raster_image.cpp
+	$(CPP) -c raster_image.cpp -o raster_image.o $(CXXFLAGS)
