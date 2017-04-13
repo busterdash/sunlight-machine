@@ -5,3 +5,7 @@
 * It doesn't care about materials. For this project we're only concerned about geometry.
 * Written in Dev-C++, easily portable to linux.
 * Accessing a value is done like this: triangle->v[0]->u;
+
+### Bitmap Writer
+* Writes windows bitmaps with a DIB of type BITMAPINFOHEADER.
+* Compatible with Windows 3.1 and above.
