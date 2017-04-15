@@ -8,4 +8,7 @@
 
 ### Bitmap Writer
 * Writes windows bitmaps with a DIB of type BITMAPINFOHEADER.
-* Compatible with Windows 3.1 and above.
+* Images compatible with Windows 3.1 and above.
+
+### Triangle Transformer
+* Takes a triangle from SMD Reader, poops out a vertex which can be written to an image by BitmapWriter.
