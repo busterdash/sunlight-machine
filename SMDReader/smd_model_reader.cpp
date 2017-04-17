@@ -80,4 +80,5 @@ vertex* smd_model_reader::parse_line(std::string line)
 smd_model_reader::~smd_model_reader()
 {
 	fi.close();
+	tri_list.clear();
 }

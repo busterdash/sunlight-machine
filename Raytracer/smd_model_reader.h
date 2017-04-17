@@ -16,6 +16,8 @@ class smd_model_reader
 	public:
 		smd_model_reader(std::string file);
 		~smd_model_reader();
+		triangle* get_triangle(unsigned int index);
+		unsigned int get_triangle_count();
 };
 
 #endif

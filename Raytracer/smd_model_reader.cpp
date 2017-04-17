@@ -80,4 +80,22 @@ vertex* smd_model_reader::parse_line(std::string line)
 smd_model_reader::~smd_model_reader()
 {
 	fi.close();
+	tri_list.clear();
+}
+
+triangle* smd_model_reader::get_triangle(unsigned int index)
+{
+	if (index >= tri_list.size())
+	{
+		return NULL;
+	}
+	else
+	{
+		return tri_list[index];
+	}
+}
+
+unsigned int smd_model_reader::get_triangle_count()
+{
+	return tri_list.size();
 }
