@@ -1,4 +1,4 @@
-#include "raytracer.h"
+#include "raytracer.hpp"
 #include <cmath>
 
 void raytracer::vec(float* a, float* b, float* c)

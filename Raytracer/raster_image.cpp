@@ -1,4 +1,4 @@
-#include "raster_image.h"
+#include "raster_image.hpp"
 
 raster_image::raster_image(unsigned int width, unsigned int height)
 {

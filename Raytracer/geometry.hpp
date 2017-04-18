@@ -1,15 +1,15 @@
-#ifndef _GEOMETRY_H
-#define _GEOMETRY_H
+#ifndef _GEOMETRY_HPP
+#define _GEOMETRY_HPP
 
 struct vertex
 {
-	float x;
+	float x; //World position.
 	float y;
 	float z;
-	float nx;
+	float nx; //Surface normal.
 	float ny;
 	float nz;
-	float u;
+	float u; //Texture coordinates.
 	float v;
 	vertex(float pos_x, float pos_y, float pos_z, float normal_x, float normal_y, float normal_z, float tex_x, float tex_y);
 	vertex(float pos_x, float pos_y, float pos_z);

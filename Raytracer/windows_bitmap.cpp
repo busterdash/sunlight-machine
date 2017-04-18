@@ -1,4 +1,4 @@
-#include "windows_bitmap.h"
+#include "windows_bitmap.hpp"
 
 windows_bitmap::windows_bitmap(string filename, unsigned int width, unsigned int height)
 {

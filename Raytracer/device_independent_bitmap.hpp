@@ -6,11 +6,11 @@
 // Purpose: Creates the image portion of the bitmap file.
 ////////////////////////////////////////////////////////////////
 
-#ifndef _DEVICE_BITMAP_H
-#define _DEVICE_BITMAP_H
+#ifndef _DEVICE_BITMAP_HPP
+#define _DEVICE_BITMAP_HPP
 
-#include "binary_writer.h"
-#include "raster_image.h"
+#include "binary_writer.hpp"
+#include "raster_image.hpp"
 using namespace std;
 
 class device_independent_bitmap

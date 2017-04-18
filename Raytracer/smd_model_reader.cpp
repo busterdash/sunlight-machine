@@ -1,4 +1,4 @@
-#include "smd_model_reader.h"
+#include "smd_model_reader.hpp"
 
 smd_model_reader::smd_model_reader(std::string file)
 {

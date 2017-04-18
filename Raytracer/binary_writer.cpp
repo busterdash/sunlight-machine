@@ -1,4 +1,4 @@
-#include "binary_writer.h"
+#include "binary_writer.hpp"
 
 int binary_writer::bytes_written = 0;
 

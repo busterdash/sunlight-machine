@@ -1,11 +1,11 @@
-#ifndef _SMD_MODEL_READER_H
-#define _SMD_MODEL_READER_H
+#ifndef _SMD_MODEL_READER_HPP
+#define _SMD_MODEL_READER_HPP
 
 #include <iostream>
 #include <fstream>
 #include <string>
 #include <vector>
-#include "triangle.h"
+#include "geometry.hpp"
 
 class smd_model_reader
 {
@@ -16,6 +16,8 @@ class smd_model_reader
 	public:
 		smd_model_reader(std::string file);
 		~smd_model_reader();
+		triangle* get_triangle(unsigned int index);
+		unsigned int get_triangle_count();
 };
 
 #endif

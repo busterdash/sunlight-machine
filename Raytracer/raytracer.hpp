@@ -1,7 +1,7 @@
-#ifndef _RAYTRACER_H
-#define _RAYTRACER_H
+#ifndef _RAYTRACER_HPP
+#define _RAYTRACER_HPP
 
-#include "geometry.h"
+#include "geometry.hpp"
 
 class raytracer
 {

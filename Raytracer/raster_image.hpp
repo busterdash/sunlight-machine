@@ -6,8 +6,8 @@
 // Purpose: An uncompressed 24-bit bitmap image in memory.
 ////////////////////////////////////////////////////////////////
 
-#ifndef _RASTER_IMAGE_H
-#define _RASTER_IMAGE_H
+#ifndef _RASTER_IMAGE_HPP
+#define _RASTER_IMAGE_HPP
 
 typedef unsigned char color_component;
 typedef unsigned int color;

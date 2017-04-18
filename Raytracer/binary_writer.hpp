@@ -6,8 +6,8 @@
 // Purpose: Provides an interface to write binary data easier.
 ////////////////////////////////////////////////////////////////
 
-#ifndef _BINARY_WRITER_H
-#define _BINARY_WRITER_H
+#ifndef _BINARY_WRITER_HPP
+#define _BINARY_WRITER_HPP
 
 #include <fstream>
 using namespace std;

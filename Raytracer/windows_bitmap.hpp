@@ -6,11 +6,11 @@
 // Purpose: Creates a windows bitmap image.
 ////////////////////////////////////////////////////////////////
 
-#ifndef _WINDOWS_BITMAP_H
-#define _WINDOWS_BITMAP_H
+#ifndef _WINDOWS_BITMAP_HPP
+#define _WINDOWS_BITMAP_HPP
 
 #include <string>
-#include "device_independent_bitmap.h"
+#include "device_independent_bitmap.hpp"
 using namespace std;
 
 class windows_bitmap

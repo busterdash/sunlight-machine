@@ -1,4 +1,4 @@
-#include "device_independent_bitmap.h"
+#include "device_independent_bitmap.hpp"
 #include <math.h>
 
 device_independent_bitmap::device_independent_bitmap(unsigned int width, unsigned int height)
