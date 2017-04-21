@@ -107,22 +107,22 @@ bool raytracer::process_intersection(float* p, float* d, float* v0, float* v1, f
 	}
 }
 
-bool raytracer::get_intersection(vertex* ray, triangle* tri, vertex* intersect)
+bool raytracer::get_intersection(vertex* ray, triangle* tri, vertex* intersect, float* t)
 {
-	float p[3], d[3], v0[3], v1[3], v2[3], t;
+	float p[3], d[3], v0[3], v1[3], v2[3];
 	p[0] = ray->x; p[1] = ray->y; p[2] = ray->z;
 	d[0] = ray->nx; d[1] = ray->ny; d[2] = ray->nz;
 	v0[0] = tri->v[0]->x; v0[1] = tri->v[0]->y; v0[2] = tri->v[0]->z;
 	v1[0] = tri->v[1]->x; v1[1] = tri->v[1]->y; v1[2] = tri->v[1]->z;
 	v2[0] = tri->v[2]->x; v2[1] = tri->v[2]->y; v2[2] = tri->v[2]->z;
 	
-	if (!process_intersection(p, d, v0, v1, v2, &t)) //If ray doesn't hit this triangle...
+	if (!process_intersection(p, d, v0, v1, v2, t)) //If ray doesn't hit this triangle...
 	{
 		return false;
 	}
 	
-	(*intersect).x = (p[0] + d[0] * t);
-	(*intersect).y = (p[1] + d[1] * t);
-	(*intersect).z = (p[2] + d[2] * t);
+	(*intersect).x = (p[0] + d[0] * (*t));
+	(*intersect).y = (p[1] + d[1] * (*t));
+	(*intersect).z = (p[2] + d[2] * (*t));
 	return true;
 }

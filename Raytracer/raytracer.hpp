@@ -13,7 +13,7 @@ class raytracer
 		static void alpha_beta_to_cartesian(float x1, float y1, float x2, float y2, float percent, float* outx, float* outy);
 		static bool process_intersection(float* p, float* d, float* v0, float* v1, float* v2, float* t);
 	public:
-		static bool get_intersection(vertex* ray, triangle* tri, vertex* intersect);
+		static bool get_intersection(vertex* ray, triangle* tri, vertex* intersect, float* dist);
 		static void transform_trace_to_uv(triangle* t, vertex* hit);
 };
 

@@ -24,27 +24,32 @@ int main(int argc, char* argv[])
 	std::cout << sx << ' ' << sy << ' ' << sz << std::endl;
 	vertex* sun = new vertex(1.0f,0.0f,4.0f,sx,sy,sz,0.0f,0.0f);
 	vertex* hit = new vertex();
+	float closest_dist = -1.0f;
 
 	for (unsigned int i = 0; i < smr->get_triangle_count(); i++)
 	{
-		bool rayhit = raytracer::get_intersection(sun, smr->get_triangle(i), hit);
+		float dist;
+		bool rayhit = raytracer::get_intersection(sun, smr->get_triangle(i), hit, &dist);
 	
 		if (rayhit)
 		{
 			std::cout << hit->x << " " << hit->y << " " << hit->z << std::endl;
+			
+			if (dist < closest_dist || closest_dist < 0)
+			{
+				raytracer::transform_trace_to_uv(smr->get_triangle(i), hit);
+				closest_dist = dist;
+			}
 		}
-		else
-		{
-			continue;
-		}
-		
-		raytracer::transform_trace_to_uv(smr->get_triangle(i), hit);
-		
-		wb->get_dib()->get_image()->set_pixel((unsigned int)round(hit->u*128.0f),(unsigned int)round(128.0f-hit->v*128.0f), 0x000000);
 	}
 	
-	wb->save();
+	if (closest_dist > 0) //Evaluates to false if we didn't hit anything.
+	{
+		wb->get_dib()->get_image()->set_pixel((unsigned int)round(hit->u*128.0f),(unsigned int)round(128.0f-hit->v*128.0f), 0xffffff);
+	}
 	
+	wb->save(); //This stays outside any raytrace operations, or else it won't write the image at all.
+
 	delete wb;
 	delete smr;
 	delete sun;
