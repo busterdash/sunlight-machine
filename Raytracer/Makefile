@@ -1,0 +1,49 @@
+# Project: Raytracer
+# Makefile created by Dev-C++ 5.11
+
+CPP      = g++
+CC       = gcc
+WINDRES  = windres
+OBJ      = main.o binary_writer.o device_independent_bitmap.o raster_image.o smd_model_reader.o windows_bitmap.o geometry.o raytracer.o
+LINKOBJ  = main.o binary_writer.o device_independent_bitmap.o raster_image.o smd_model_reader.o windows_bitmap.o geometry.o raytracer.o
+LIBS     = -L"C:/Program Files (x86)/Dev-Cpp/MinGW64/lib" -L"C:/Program Files (x86)/Dev-Cpp/MinGW64/x86_64-w64-mingw32/lib" -static-libgcc
+INCS     = -I"C:/Program Files (x86)/Dev-Cpp/MinGW64/include" -I"C:/Program Files (x86)/Dev-Cpp/MinGW64/x86_64-w64-mingw32/include" -I"C:/Program Files (x86)/Dev-Cpp/MinGW64/lib/gcc/x86_64-w64-mingw32/4.9.2/include"
+CXXINCS  = -I"C:/Program Files (x86)/Dev-Cpp/MinGW64/include" -I"C:/Program Files (x86)/Dev-Cpp/MinGW64/x86_64-w64-mingw32/include" -I"C:/Program Files (x86)/Dev-Cpp/MinGW64/lib/gcc/x86_64-w64-mingw32/4.9.2/include" -I"C:/Program Files (x86)/Dev-Cpp/MinGW64/lib/gcc/x86_64-w64-mingw32/4.9.2/include/c++"
+BIN      = Raytracer
+CXXFLAGS = $(CXXINCS) -std=c++11
+CFLAGS   = $(INCS) 
+RM       = rm -f
+
+.PHONY: all all-before all-after clean clean-custom
+
+all: all-before $(BIN) all-after
+
+clean: clean-custom
+	${RM} $(OBJ) $(BIN)
+
+$(BIN): $(OBJ)
+	$(CPP) $(LINKOBJ) -o $(BIN) $(LIBS)
+
+main.o: main.cpp
+	$(CPP) -c main.cpp -o main.o $(CXXFLAGS)
+
+binary_writer.o: binary_writer.cpp
+	$(CPP) -c binary_writer.cpp -o binary_writer.o $(CXXFLAGS)
+
+device_independent_bitmap.o: device_independent_bitmap.cpp
+	$(CPP) -c device_independent_bitmap.cpp -o device_independent_bitmap.o $(CXXFLAGS)
+
+raster_image.o: raster_image.cpp
+	$(CPP) -c raster_image.cpp -o raster_image.o $(CXXFLAGS)
+
+smd_model_reader.o: smd_model_reader.cpp
+	$(CPP) -c smd_model_reader.cpp -o smd_model_reader.o $(CXXFLAGS)
+
+windows_bitmap.o: windows_bitmap.cpp
+	$(CPP) -c windows_bitmap.cpp -o windows_bitmap.o $(CXXFLAGS)
+
+geometry.o: geometry.cpp
+	$(CPP) -c geometry.cpp -o geometry.o $(CXXFLAGS)
+
+raytracer.o: raytracer.cpp
+	$(CPP) -c raytracer.cpp -o raytracer.o $(CXXFLAGS)
