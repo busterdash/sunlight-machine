@@ -12,6 +12,7 @@
 float const PI = 3.141593f;
 void point_trans_rot_z(float angle, float* x, float* y, float* z);
 void point_trans_rot_y(float angle, float* x, float* y, float* z);
+void point_trans_rot_yz(float pitch, float yaw, float* x, float* y, float* z);
 void perform_raytrace(std::string smd_in, std::string bmp_out, int tex_width, int tex_height, float sun_pitch, float sun_yaw, int resolution);
 
 int main(int argc, char** argv)
@@ -82,21 +83,21 @@ void perform_raytrace(std::string smd_in, std::string bmp_out, int tex_width, in
 	float sdx = cos(yaw*PI/180) * cos(pitch*PI/180); //Sun direction.
 	float sdy = sin(yaw*PI/180) * cos(pitch*PI/180);
 	float sdz = sin(pitch*PI/180);
-	float spx = 2.0f; //Sun position.
-	float spy = 1.0f;
+	float spx = 0.0f; //Sun position.
+	float spy = 6.0f;
 	float spz = 4.0f;
 	vertex* hit = new vertex();
 	vertex* sun = new vertex(spx,spy,spz,sdx,sdy,sdz,0.0f,0.0f);
 	float closest_tri = -1.0f;
 	
-	for (unsigned int py = 0; py < resolution; py++)
+	for (int py = 0; py < resolution; py++)
 	{
-		for (unsigned int px = 0; px < resolution; px++) //Create several rays.
+		for (int px = 0; px < resolution; px++) //Create several rays.
 		{
 			float ox, oy, oz;
-			ox = 0.0f; oy = (float)(px - 128.0f) / 64.0f; oz = (float)(py - 128.0f) / 64.0f;
-			point_trans_rot_y(-33.0f,&ox,&oy,&oz);
-			point_trans_rot_z(30.0f,&ox,&oy,&oz);
+			ox = 0.0f; oy = (float)(px-(resolution/2))/(resolution/8); oz = (float)(py-(resolution/2))/(resolution/8);
+			point_trans_rot_y(-pitch,&ox,&oy,&oz);
+			point_trans_rot_z(yaw,&ox,&oy,&oz);
 			(*sun).x = spx + ox;
 			(*sun).y = spy + oy;
 			(*sun).z = spz + oz;
@@ -118,7 +119,7 @@ void perform_raytrace(std::string smd_in, std::string bmp_out, int tex_width, in
 			
 			if (closest_tri > 0) //Evaluates to false if we didn't hit anything.
 			{
-				wb->get_dib()->get_image()->set_pixel((unsigned int)round(hit->u*512.0f),(unsigned int)round(512.0f-hit->v*512.0f), 0xffffff);
+				wb->get_dib()->get_image()->set_pixel((unsigned int)round(hit->u*tex_width),(unsigned int)round(tex_height-hit->v*tex_height), 0xffffff);
 			}
 			
 			closest_tri = -1.0f;
