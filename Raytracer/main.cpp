@@ -11,14 +11,47 @@
 float const PI = 3.141593f;
 void point_trans_rot_z(float angle, float* x, float* y, float* z);
 void point_trans_rot_y(float angle, float* x, float* y, float* z);
+void perform_raytrace(std::string smd_in, std::string bmp_out, int tex_width, int tex_height, float sun_pitch, float sun_yaw);
 
 int main(int argc, char* argv[])
 {
-	windows_bitmap* wb = new windows_bitmap("asdf.bmp",512,512);
-	smd_model_reader* smr = new smd_model_reader("new.smd");
+	perform_raytrace("new.smd","asdf.bmp",512,512,30.0f,15.0f);
+	return 0;
+}
+
+void point_trans_rot_z(float angle, float* x, float* y, float* z)
+{
+	float ox, oy, oz, pc, ps;
+	ox = *x;
+	oy = *y;
+	oz = *z;
+	pc = cos(angle*PI/180);
+	ps = sin(angle*PI/180);
+	*x = (ox * pc) + (oy * -ps);
+	*y = (ox * ps) + (oy * pc);
+	*z = oz;
+}
+
+void point_trans_rot_y(float angle, float* x, float* y, float* z)
+{
+	float ox, oy, oz, pc, ps;
+	ox = *x;
+	oy = *y;
+	oz = *z;
+	pc = cos(angle*PI/180);
+	ps = sin(angle*PI/180);
+	*x = (ox * pc) + (oz * ps);
+	*y = oy;
+	*z = (ox * -ps) + (oz * pc);
+}
+
+void perform_raytrace(std::string smd_in, std::string bmp_out, int tex_width, int tex_height, float sun_pitch, float sun_yaw)
+{
+	windows_bitmap* wb = new windows_bitmap(bmp_out,tex_width,tex_height);
+	smd_model_reader* smr = new smd_model_reader(smd_in);
 	
-	float pitch = 30.0f - 90.0f;
-	float yaw = 15.0f + 180.0f;
+	float pitch = sun_pitch - 90.0f;
+	float yaw = sun_yaw + 180.0f;
 	float sdx = cos(yaw*PI/180) * cos(pitch*PI/180); //Sun direction
 	float sdy = sin(yaw*PI/180) * cos(pitch*PI/180);
 	float sdz = sin(pitch*PI/180);
@@ -73,32 +106,5 @@ int main(int argc, char* argv[])
 	delete smr;
 	delete sun;
 	delete hit;
-	return 0;
-}
-
-void point_trans_rot_z(float angle, float* x, float* y, float* z)
-{
-	float ox, oy, oz, pc, ps;
-	ox = *x;
-	oy = *y;
-	oz = *z;
-	pc = cos(angle*PI/180);
-	ps = sin(angle*PI/180);
-	*x = (ox * pc) + (oy * -ps);
-	*y = (ox * ps) + (oy * pc);
-	*z = oz;
-}
-
-void point_trans_rot_y(float angle, float* x, float* y, float* z)
-{
-	float ox, oy, oz, pc, ps;
-	ox = *x;
-	oy = *y;
-	oz = *z;
-	pc = cos(angle*PI/180);
-	ps = sin(angle*PI/180);
-	*x = (ox * pc) + (oz * ps);
-	*y = oy;
-	*z = (ox * -ps) + (oz * pc);
 }
 
