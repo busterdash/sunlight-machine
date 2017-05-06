@@ -17,6 +17,7 @@ class smd_model_reader
 		smd_model_reader(std::string file);
 		~smd_model_reader();
 		triangle* get_triangle(unsigned int index);
+		float get_max_coordinate();
 		unsigned int get_triangle_count();
 };
 

@@ -95,6 +95,34 @@ triangle* smd_model_reader::get_triangle(unsigned int index)
 	}
 }
 
+float smd_model_reader::get_max_coordinate()
+{
+	float max = -1.0f;
+	
+	for (int i = 0; i < tri_list.size(); i++)
+	{
+		for (int j = 0; j < 3; j++)
+		{
+			if (tri_list[i]->v[j]->x > max)
+			{
+				max = tri_list[i]->v[j]->x;
+			}
+			
+			if (tri_list[i]->v[j]->y > max)
+			{
+				max = tri_list[i]->v[j]->x;
+			}
+			
+			if (tri_list[i]->v[j]->z > max)
+			{
+				max = tri_list[i]->v[j]->x;
+			}
+		}
+	}
+	
+	return max;
+}
+
 unsigned int smd_model_reader::get_triangle_count()
 {
 	return tri_list.size();
