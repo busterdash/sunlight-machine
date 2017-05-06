@@ -79,13 +79,14 @@ void perform_raytrace(std::string smd_in, std::string bmp_out, int tex_width, in
 	smd_model_reader* smr = new smd_model_reader(smd_in);
 	
 	float pitch = sun_pitch - 90.0f;
+	float inv_pitch = sun_pitch + 90.0f;
 	float yaw = sun_yaw + 180.0f;
 	float sdx = cos(yaw*PI/180) * cos(pitch*PI/180); //Sun direction.
 	float sdy = sin(yaw*PI/180) * cos(pitch*PI/180);
 	float sdz = sin(pitch*PI/180);
-	float spx = 0.0f; //Sun position.
-	float spy = 6.0f;
-	float spz = 4.0f;
+	float spz = sin(inv_pitch*PI/180) * 6.0f;
+	float spx = cos(yaw*PI/180) * cos(inv_pitch*PI/180) * 6.0f;
+	float spy = sin(yaw*PI/180) * cos(inv_pitch*PI/180) * 6.0f;
 	vertex* hit = new vertex();
 	vertex* sun = new vertex(spx,spy,spz,sdx,sdy,sdz,0.0f,0.0f);
 	float closest_tri = -1.0f;
@@ -126,7 +127,7 @@ void perform_raytrace(std::string smd_in, std::string bmp_out, int tex_width, in
 		}
 	}
 
-	wb->save(); //This stays outside any raytrace operations, or else it won't write the image at all.
+	wb->save(); //This stays outside any raytrace operations, or else it won't write the image at all.s
 
 	delete wb;
 	delete smr;
