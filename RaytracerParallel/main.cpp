@@ -29,21 +29,21 @@ int main(int argc, char** argv)
 
 	for (int i = 1; i < argc; i++) //Deal with flags.
 	{
-		if (!stricmp(argv[i],"-in"))
+		if (!strcasecmp(argv[i],"-in"))
 			inpath = std::string(argv[i+1]);
-		else if (!stricmp(argv[i],"-out"))
+		else if (!strcasecmp(argv[i],"-out"))
 			outpath = std::string(argv[i+1]);
-		else if (!stricmp(argv[i],"-width"))
+		else if (!strcasecmp(argv[i],"-width"))
 			img_width = atoi(argv[i+1]);
-		else if (!stricmp(argv[i],"-height"))
+		else if (!strcasecmp(argv[i],"-height"))
 			img_height = atoi(argv[i+1]);
-		else if (!stricmp(argv[i],"-yaw"))
+		else if (!strcasecmp(argv[i],"-yaw"))
 			yaw = atof(argv[i+1]);
-		else if (!stricmp(argv[i],"-pitch"))
+		else if (!strcasecmp(argv[i],"-pitch"))
 			pitch = atof(argv[i+1]);
-		else if (!stricmp(argv[i],"-resolution"))
+		else if (!strcasecmp(argv[i],"-resolution"))
 			resolution = atoi(argv[i+1]);
-		else if (!stricmp(argv[i],"-spread"))
+		else if (!strcasecmp(argv[i],"-spread"))
 			spread = atof(argv[i+1]);
 	}
 	
