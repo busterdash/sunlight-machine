@@ -26,7 +26,6 @@ int main(int argc, char** argv)
 	int img_height = 512;
 	float yaw = 15.0f;
 	float pitch = 30.0f;
-	
 
 	for (int i = 1; i < argc; i++) //Deal with flags.
 	{
@@ -127,7 +126,7 @@ void perform_raytrace(std::string smd_in, std::string bmp_out, int tex_width, in
 			
 			if (closest_tri > 0) //Evaluates to false if we didn't hit anything.
 			{
-				wb->get_dib()->get_image()->set_pixel((unsigned int)round(hit->u*tex_width),(unsigned int)round(tex_height-hit->v*tex_height), 0xffffff);
+				wb->get_dib()->get_image()->set_pixel((unsigned int)floor(hit->u*tex_width), (unsigned int)floor(tex_height-hit->v*tex_height), 0xffffff);
 			}
 			
 			closest_tri = -1.0f;
