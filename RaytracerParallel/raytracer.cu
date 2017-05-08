@@ -1,6 +1,7 @@
-#include "raytracer.hpp"
+#include "raytracer.cuh"
 #include <cmath>
 
+__device__ __host__
 void raytracer::vec(float* a, float* b, float* c)
 {
 	a[0] = b[0] - c[0];
@@ -8,6 +9,7 @@ void raytracer::vec(float* a, float* b, float* c)
 	a[2] = b[2] - c[2];
 }
 
+__device__ __host__
 void raytracer::cross_product(float* a, float* b, float* c)
 {
 	a[0] = b[1] * c[2] - c[1] * b[2];
@@ -15,16 +17,19 @@ void raytracer::cross_product(float* a, float* b, float* c)
 	a[2] = b[0] * c[1] - c[0] * b[1];
 }
 
+__device__ __host__
 float raytracer::dot_product(float* a, float* b)
 {
 	return a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
 }
 
+__device__ __host__
 float raytracer::distance_formula_3d(float x1, float y1, float z1, float x2, float y2, float z2)
 {
 	return sqrt((x1-x2)*(x1-x2)+(y1-y2)*(y1-y2)+(z1-z2)*(z1-z2));
 }
 
+__device__ __host__
 void raytracer::alpha_beta_to_cartesian(float x1, float y1, float x2, float y2, float percent, float* outx, float* outy)
 {
 	float dist = sqrt((x1-x2)*(x1-x2)+(y1-y2)*(y1-y2));
@@ -33,6 +38,7 @@ void raytracer::alpha_beta_to_cartesian(float x1, float y1, float x2, float y2, 
 	*outy = (y2 - y1) * dist_seg / dist + y1;
 }
 
+__device__ __host__
 void raytracer::transform_trace_to_uv(triangle* t, vertex* hit)
 {	
 	//Naming: s->side, i->inner, a|b|c->vertex
@@ -62,6 +68,7 @@ void raytracer::transform_trace_to_uv(triangle* t, vertex* hit)
 }
 
 //Source of this function only: http://www.lighthouse3d.com/tutorials/maths/ray-triangle-intersection/
+__device__ __host__
 bool raytracer::process_intersection(float* p, float* d, float* v0, float* v1, float* v2, float* t)
 {
 	float e1[3], e2[3], h[3], s[3], q[3];
@@ -107,6 +114,7 @@ bool raytracer::process_intersection(float* p, float* d, float* v0, float* v1, f
 	}
 }
 
+__device__ __host__
 bool raytracer::get_intersection(vertex* ray, triangle* tri, vertex* intersect, float* t)
 {
 	float p[3], d[3], v0[3], v1[3], v2[3];

@@ -5,7 +5,7 @@
 #include <iomanip>
 #include <sys/time.h>
 
-#include "raytracer.hpp"
+#include "raytracer.cuh"
 #include "windows_bitmap.hpp"
 #include "smd_model_reader.hpp"
 
