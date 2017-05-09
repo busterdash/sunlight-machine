@@ -18,6 +18,26 @@ void point_trans_rot_y(float angle, float* x, float* y, float* z);
 void point_trans_rot_yz(float pitch, float yaw, float* x, float* y, float* z);
 void perform_raytrace(std::string smd_in, std::string bmp_out, int tex_width, int tex_height, float sun_pitch, float sun_yaw);
 
+//Returns the current time in microseconds.
+long long start_timer()
+{
+	struct timeval tv;
+	gettimeofday(&tv, NULL);
+	return tv.tv_sec * 1000000 + tv.tv_usec;
+}
+
+
+//Prints the time elapsed since the specified time.
+long long stop_timer(long long start_time, std::string name)
+{
+	struct timeval tv;
+	gettimeofday(&tv, NULL);
+	long long end_time = tv.tv_sec * 1000000 + tv.tv_usec;
+        std::cout << std::setprecision(5);	
+	std::cout << name << ": " << ((float) (end_time - start_time)) / (1000 * 1000) << " sec\n";
+	return end_time - start_time;
+}
+
 int main(int argc, char** argv)
 {
 	std::string inpath;
@@ -29,25 +49,27 @@ int main(int argc, char** argv)
 
 	for (int i = 1; i < argc; i++) //Deal with flags.
 	{
-		if (!stricmp(argv[i],"-in"))
+		if (!strcasecmp(argv[i],"-in"))
 			inpath = std::string(argv[i+1]);
-		else if (!stricmp(argv[i],"-out"))
+		else if (!strcasecmp(argv[i],"-out"))
 			outpath = std::string(argv[i+1]);
-		else if (!stricmp(argv[i],"-width"))
+		else if (!strcasecmp(argv[i],"-width"))
 			img_width = atoi(argv[i+1]);
-		else if (!stricmp(argv[i],"-height"))
+		else if (!strcasecmp(argv[i],"-height"))
 			img_height = atoi(argv[i+1]);
-		else if (!stricmp(argv[i],"-yaw"))
+		else if (!strcasecmp(argv[i],"-yaw"))
 			yaw = atof(argv[i+1]);
-		else if (!stricmp(argv[i],"-pitch"))
+		else if (!strcasecmp(argv[i],"-pitch"))
 			pitch = atof(argv[i+1]);
-		else if (!stricmp(argv[i],"-resolution"))
+		else if (!strcasecmp(argv[i],"-resolution"))
 			resolution = atoi(argv[i+1]);
-		else if (!stricmp(argv[i],"-spread"))
+		else if (!strcasecmp(argv[i],"-spread"))
 			spread = atof(argv[i+1]);
 	}
-	
+
+	long long start = start_timer();	
 	perform_raytrace(inpath,outpath,img_width,img_height,pitch,yaw);
+	stop_timer(start,"Time taken for serial");
 	return 0;
 }
 
@@ -79,6 +101,7 @@ void point_trans_rot_y(float angle, float* x, float* y, float* z)
 
 void perform_raytrace(std::string smd_in, std::string bmp_out, int tex_width, int tex_height, float sun_pitch, float sun_yaw)
 {
+	long long start_var_creation = start_timer();
 	windows_bitmap* wb = new windows_bitmap(bmp_out,tex_width,tex_height);
 	smd_model_reader* smr = new smd_model_reader(smd_in);
 	
@@ -96,7 +119,9 @@ void perform_raytrace(std::string smd_in, std::string bmp_out, int tex_width, in
 	vertex* hit = new vertex();
 	vertex* sun = new vertex(spx,spy,spz,sdx,sdy,sdz,0.0f,0.0f);
 	float closest_tri = -1.0f;
-	
+	stop_timer(start_var_creation, "Variable init time");
+
+	long long start_raytracing = start_timer();
 	for (int py = 0; py < resolution; py++)
 	{
 		for (int px = 0; px < resolution; px++) //Create several rays.
@@ -132,6 +157,7 @@ void perform_raytrace(std::string smd_in, std::string bmp_out, int tex_width, in
 			closest_tri = -1.0f;
 		}
 	}
+	stop_timer(start_raytracing, "raytracing serial time");
 
 	wb->save(); //This stays outside any raytrace operations, or else it won't write the image at all.
 
