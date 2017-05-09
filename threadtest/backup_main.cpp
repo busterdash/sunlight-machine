@@ -50,7 +50,7 @@ int main(int argc, char* argv[])
 	
 	for (t = 0; t < NUM_THREADS; t++)
 	{
-		wa[t] = new worker_arguments(img,0,t*image_height/NUM_THREADS,image_width,(t+1)*image_height/NUM_THREADS,0x999999);
+		wa[t] = new worker_arguments(img,0,t*image_height/NUM_THREADS,image_width,(t+1)*image_height/NUM_THREADS,0x999999 + (t*0x010000));
 	}
 	
 	for (t = 0; t < NUM_THREADS; t++)

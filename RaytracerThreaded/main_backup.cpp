@@ -4,7 +4,7 @@
 #include <string>
 #include <iomanip>
 #include <sys/time.h>
-#include <pthread.h>
+
 #include "raytracer.hpp"
 #include "windows_bitmap.hpp"
 #include "smd_model_reader.hpp"
@@ -74,18 +74,6 @@ void point_trans_rot_y(float angle, float* x, float* y, float* z)
 	*x = (ox * pc) + (oz * ps);
 	*y = oy;
 	*z = (ox * -ps) + (oz * pc);
-}
-
-struct worker_arguments
-{
-	worker_arguments()
-	{
-	}
-};
-
-void* raytrace_worker(void* arguments)
-{
-	
 }
 
 void perform_raytrace(std::string smd_in, std::string bmp_out, int tex_width, int tex_height, float sun_pitch, float sun_yaw)
