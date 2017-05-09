@@ -6,8 +6,8 @@
 // Purpose: An uncompressed 24-bit bitmap image in memory.
 ////////////////////////////////////////////////////////////////
 
-#ifndef _RASTER_IMAGE_CUH
-#define _RASTER_IMAGE_CUH
+#ifndef _RASTER_IMAGE_HPP
+#define _RASTER_IMAGE_HPP
 
 typedef unsigned char color_component;
 typedef unsigned int color;
@@ -21,12 +21,12 @@ class raster_image
 		color_component* image_green_array;
 		color_component* image_blue_array;
 	public:
-		__device__ __host__ raster_image(unsigned int width, unsigned int height);
-		__device__ __host__ ~raster_image();
-		__device__ __host__ color_component* get_image_red_array();
-		__device__ __host__ color_component* get_image_green_array();
-		__device__ __host__ color_component* get_image_blue_array();
-		__device__ __host__ void set_pixel(unsigned int x, unsigned int y, color c);
+		raster_image(unsigned int width, unsigned int height);
+		~raster_image();
+		color_component* get_image_red_array();
+		color_component* get_image_green_array();
+		color_component* get_image_blue_array();
+		void set_pixel(unsigned int x, unsigned int y, color c);
 };
 
 #endif

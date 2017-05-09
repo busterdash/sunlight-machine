@@ -1,6 +1,5 @@
-#include "geometry.cuh"
+#include "geometry.hpp"
 
-__device__ __host__
 vertex::vertex(float pos_x, float pos_y, float pos_z, float normal_x, float normal_y, float normal_z, float tex_x, float tex_y)
 {
 	x = pos_x;
@@ -13,7 +12,6 @@ vertex::vertex(float pos_x, float pos_y, float pos_z, float normal_x, float norm
 	v = tex_y;
 }
 
-__device__ __host__
 vertex::vertex(float pos_x, float pos_y, float pos_z)
 {
 	x = pos_x;
@@ -26,7 +24,6 @@ vertex::vertex(float pos_x, float pos_y, float pos_z)
 	v = 0.0f;
 }
 
-__device__ __host__
 vertex::vertex()
 {
 	x = 0.0f;
@@ -39,12 +36,10 @@ vertex::vertex()
 	v = 0.0f;
 }
 
-__device__ __host__
 vertex::~vertex()
 {
 }
 
-__device__ __host__
 triangle::triangle(vertex* v1, vertex* v2, vertex* v3)
 {
 	v[0] = v1;
@@ -52,7 +47,6 @@ triangle::triangle(vertex* v1, vertex* v2, vertex* v3)
 	v[2] = v3;
 }
 
-__device__ __host__
 triangle::~triangle()
 {
 	delete v[0];

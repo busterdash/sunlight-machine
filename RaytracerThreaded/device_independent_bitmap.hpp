@@ -10,7 +10,7 @@
 #define _DEVICE_BITMAP_HPP
 
 #include "binary_writer.hpp"
-#include "raster_image.cuh"
+#include "raster_image.hpp"
 using namespace std;
 
 class device_independent_bitmap

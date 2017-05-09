@@ -5,7 +5,7 @@
 #include <fstream>
 #include <string>
 #include <vector>
-#include "geometry.cuh"
+#include "geometry.hpp"
 
 class smd_model_reader
 {
