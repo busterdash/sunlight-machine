@@ -13,9 +13,6 @@ float const PI = 3.141593f;
 int resolution = 512;
 float spread = 1.0f;
 
-void point_trans_rot_z(float angle, float* x, float* y, float* z);
-void point_trans_rot_y(float angle, float* x, float* y, float* z);
-void point_trans_rot_yz(float pitch, float yaw, float* x, float* y, float* z);
 void perform_raytrace(std::string smd_in, std::string bmp_out, int tex_width, int tex_height, float sun_pitch, float sun_yaw);
 
 int main(int argc, char** argv)
@@ -51,7 +48,7 @@ int main(int argc, char** argv)
 	return 0;
 }
 
-void point_trans_rot_z(float angle, float* x, float* y, float* z)
+__device__ void point_trans_rot_z(float angle, float* x, float* y, float* z)
 {
 	float ox, oy, oz, pc, ps;
 	ox = *x;
@@ -64,7 +61,7 @@ void point_trans_rot_z(float angle, float* x, float* y, float* z)
 	*z = oz;
 }
 
-void point_trans_rot_y(float angle, float* x, float* y, float* z)
+__device__ void point_trans_rot_y(float angle, float* x, float* y, float* z)
 {
 	float ox, oy, oz, pc, ps;
 	ox = *x;
@@ -77,7 +74,46 @@ void point_trans_rot_y(float angle, float* x, float* y, float* z)
 	*z = (ox * -ps) + (oz * pc);
 }
 
-void perform_raytrace(std::string smd_in, std::string bmp_out, int tex_width, int tex_height, float sun_pitch, float sun_yaw)
+//Make resolution constant.
+//Make spread constant.
+
+__global__ void raytrace_kernel(vertex* sun, float* pitch, float* yaw, raster_image* image, float* triangles, int* tri_count)
+{
+	//for py = 0 to resolution
+	//for px = 0 to resolution
+
+	float ox, oy, oz;
+	ox = 0.0f; oy = (float)(px-(resolution/2))/(resolution/8)*spread; oz = (float)(py-(resolution/2))/(resolution/8)*spread;
+	point_trans_rot_y(-pitch,&ox,&oy,&oz);
+	point_trans_rot_z(yaw,&ox,&oy,&oz);
+	(*sun).x = (*sun).x + ox;
+	(*sun).y = (*sun).y + oy;
+	(*sun).z = (*sun).z + oz;
+
+	for (unsigned int i = 0; i < *tri_count; i++) //Check each triangle against ray.
+	{
+		float dist;
+		bool rayhit = raytracer::get_intersection(sun, smr->get_triangle(i), hit, &dist);
+		
+		if (rayhit)
+		{
+			if (dist < closest_tri || closest_tri < 0)
+			{
+				raytracer::transform_trace_to_uv(smr->get_triangle(i),hit);
+				closest_tri = dist;
+			}
+		}
+	}
+
+	if (closest_tri > 0) //Evaluates to false if we didn't hit anything.
+	{
+		image->set_pixel((unsigned int)floor(hit->u*tex_width), (unsigned int)floor(tex_height-hit->v*tex_height), 0xffffff);
+	}
+
+	closest_tri = -1.0f;
+}
+
+__host__ void perform_raytrace(std::string smd_in, std::string bmp_out, int tex_width, int tex_height, float sun_pitch, float sun_yaw)
 {
 	windows_bitmap* wb = new windows_bitmap(bmp_out,tex_width,tex_height);
 	smd_model_reader* smr = new smd_model_reader(smd_in);
@@ -97,41 +133,7 @@ void perform_raytrace(std::string smd_in, std::string bmp_out, int tex_width, in
 	vertex* sun = new vertex(spx,spy,spz,sdx,sdy,sdz,0.0f,0.0f);
 	float closest_tri = -1.0f;
 	
-	for (int py = 0; py < resolution; py++)
-	{
-		for (int px = 0; px < resolution; px++) //Create several rays.
-		{
-			float ox, oy, oz;
-			ox = 0.0f; oy = (float)(px-(resolution/2))/(resolution/8)*spread; oz = (float)(py-(resolution/2))/(resolution/8)*spread;
-			point_trans_rot_y(-pitch,&ox,&oy,&oz);
-			point_trans_rot_z(yaw,&ox,&oy,&oz);
-			(*sun).x = spx + ox;
-			(*sun).y = spy + oy;
-			(*sun).z = spz + oz;
-			
-			for (unsigned int i = 0; i < smr->get_triangle_count(); i++) //Check each triangle against ray.
-			{
-				float dist;
-				bool rayhit = raytracer::get_intersection(sun, smr->get_triangle(i), hit, &dist);
-			
-				if (rayhit)
-				{
-					if (dist < closest_tri || closest_tri < 0)
-					{
-						raytracer::transform_trace_to_uv(smr->get_triangle(i), hit);
-						closest_tri = dist;
-					}
-				}
-			}
-			
-			if (closest_tri > 0) //Evaluates to false if we didn't hit anything.
-			{
-				wb->get_dib()->get_image()->set_pixel((unsigned int)floor(hit->u*tex_width), (unsigned int)floor(tex_height-hit->v*tex_height), 0xffffff);
-			}
-			
-			closest_tri = -1.0f;
-		}
-	}
+	//CUDA KERNAL CALL/////////////////////	
 
 	wb->save(); //This stays outside any raytrace operations, or else it won't write the image at all.
 
