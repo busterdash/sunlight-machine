@@ -8,21 +8,22 @@
 #include "raytracer.hpp"
 #include "windows_bitmap.hpp"
 #include "smd_model_reader.hpp"
+#define NUM_THREADS 4
 
 float const PI = 3.141593f;
 int resolution = 512;
 float spread = 1.0f;
+int img_width = 512;
+int img_height = 512;
 
 void point_trans_rot_z(float angle, float* x, float* y, float* z);
 void point_trans_rot_y(float angle, float* x, float* y, float* z);
-void perform_raytrace(std::string smd_in, std::string bmp_out, int tex_width, int tex_height, float sun_pitch, float sun_yaw);
+void perform_raytrace(std::string smd_in, std::string bmp_out, float sun_pitch, float sun_yaw);
 
 int main(int argc, char** argv)
 {
 	std::string inpath;
 	std::string outpath;
-	int img_width = 512;
-	int img_height = 512;
 	float yaw = 15.0f;
 	float pitch = 30.0f;
 
@@ -46,7 +47,7 @@ int main(int argc, char** argv)
 			spread = atof(argv[i+1]);
 	}
 	
-	perform_raytrace(inpath,outpath,img_width,img_height,pitch,yaw);
+	perform_raytrace(inpath,outpath,pitch,yaw);
 	return 0;
 }
 
@@ -85,29 +86,21 @@ struct worker_arguments
         int y_start;
         int x_end;
         int y_end;
-	int tex_width;
-	int tex_height;
         float sun_dist;
         float pitch;
         float yaw;
         float spz;
         float spx;
         float spy;
-	float resolution;
-	float spread;
 
-	worker_arguments(smd_model_reader* smrx, raster_image* imgx, int image_width, int image_height, int thread_index, int number_of_threads, int resolutionx, float spreadx)
+	worker_arguments(smd_model_reader* smrx, raster_image* imgx, int thread_index)
 	{
 		smr = smrx;
 		img = imgx;
 		x_start = 0;
-		y_start = thread_index*resolution/number_of_threads;
+		y_start = thread_index*resolution/NUM_THREADS;
 		x_end = resolution;
-		y_end = (thread_index+1)*resolution/number_of_threads;
-		tex_width = image_width;
-		tex_width = image_height;
-		resolution = resolutionx;
-		spread = spreadx;
+		y_end = (thread_index+1)*resolution/NUM_THREADS;
 	}
 	
 	void sun_setup(vertex* sun_parentx, float sun_distx, float pitchx, float yawx, float spzx, float spxx, float spyx)
@@ -126,8 +119,16 @@ void* raytrace_worker(void* arguments)
 {
 	worker_arguments* args = (worker_arguments*)arguments;
 	vertex* hit = new vertex();
-	vertex* sun = new vertex(sun_parent->x,sun_parent->y,sun_parent->z,sun_parent->nx,sun_parent->ny,sun_parent->nz,sun_parent->u,sun_parent->v);
-	float closets_tri = -1;
+	vertex* sun = new vertex(args->sun_parent->x,
+				 args->sun_parent->y,
+				 args->sun_parent->z,
+				 args->sun_parent->nx,
+				 args->sun_parent->ny,
+				 args->sun_parent->nz,
+				 args->sun_parent->u,
+				 args->sun_parent->v);
+
+	float closest_tri = -1;
 	
 	for (int py = args->y_start; py < args->y_end; py++)
         {
@@ -135,8 +136,8 @@ void* raytrace_worker(void* arguments)
                 {
 			float ox, oy, oz;
                         ox = 0.0f; 
-			oy = (float)(px-(args->resolution/2))/(args->resolution/8)*args->spread;
-			oz = (float)(py-(args->resolution/2))/(args->resolution/8)*args->spread;
+			oy = (float)(px-(resolution/2))/(resolution/8)*spread;
+			oz = (float)(py-(resolution/2))/(resolution/8)*spread;
                         point_trans_rot_y(-args->pitch,&ox,&oy,&oz);
                         point_trans_rot_z(args->yaw,&ox,&oy,&oz);
                         (*sun).x = args->spx + ox;
@@ -160,7 +161,7 @@ void* raytrace_worker(void* arguments)
 
                         if (closest_tri > 0) //Evaluates to false if we didn't hit anything.
                         {
-                                img->set_pixel((unsigned int)floor(hit->u*args->tex_width), (unsigned int)floor(args->tex_height-hit->v*args->tex_height), 0xffffff);
+                                args->img->set_pixel((unsigned int)floor(hit->u*img_width), (unsigned int)floor(img_height-hit->v*img_height), 0xffffff);
                         }
 
                         closest_tri = -1.0f;
@@ -171,9 +172,9 @@ void* raytrace_worker(void* arguments)
 	delete sun;
 }
 
-void perform_raytrace(std::string smd_in, std::string bmp_out, int tex_width, int tex_height, float sun_pitch, float sun_yaw)
+void perform_raytrace(std::string smd_in, std::string bmp_out, float sun_pitch, float sun_yaw)
 {
-	windows_bitmap* wb = new windows_bitmap(bmp_out,tex_width,tex_height);
+	windows_bitmap* wb = new windows_bitmap(bmp_out,img_width,img_height);
 	smd_model_reader* smr = new smd_model_reader(smd_in);
 	
 	const float radianizer = PI/180;
@@ -190,47 +191,32 @@ void perform_raytrace(std::string smd_in, std::string bmp_out, int tex_width, in
 	vertex* hit = new vertex();
 	vertex* sun = new vertex(spx,spy,spz,sdx,sdy,sdz,0.0f,0.0f);
 	float closest_tri = -1.0f;
-	
+
+	worker_arguments* wa[NUM_THREADS];
+	pthread_t threads[NUM_THREADS];
+	int t;
+
 	//call sunsetup for the above
 	//pull in hit and sun because shared not individual
 
-
-
-	for (int py = 0; py < resolution; py++)
+	for(t = 0; t < NUM_THREADS; t++) 
 	{
-		for (int px = 0; px < resolution; px++) //Create several rays.
-		{
-			float ox, oy, oz;
-			ox = 0.0f; oy = (float)(px-(resolution/2))/(resolution/8)*spread; oz = (float)(py-(resolution/2))/(resolution/8)*spread;
-			point_trans_rot_y(-pitch,&ox,&oy,&oz);
-			point_trans_rot_z(yaw,&ox,&oy,&oz);
-			(*sun).x = spx + ox;
-			(*sun).y = spy + oy;
-			(*sun).z = spz + oz;
-			
-			for (unsigned int i = 0; i < smr->get_triangle_count(); i++) //Check each triangle against ray.
-			{
-				float dist;
-				bool rayhit = raytracer::get_intersection(sun, smr->get_triangle(i), hit, &dist);
-			
-				if (rayhit)
-				{
-					if (dist < closest_tri || closest_tri < 0)
-					{
-						raytracer::transform_trace_to_uv(smr->get_triangle(i), hit);
-						closest_tri = dist;
-					}
-				}
-			}
-			
-			if (closest_tri > 0) //Evaluates to false if we didn't hit anything.
-			{
-				wb->get_dib()->get_image()->set_pixel((unsigned int)floor(hit->u*tex_width), (unsigned int)floor(tex_height-hit->v*tex_height), 0xffffff);
-			}
-			
-			closest_tri = -1.0f;
-		}
+		//wb function for this
+		wa[t] = new worker_arguments(smr, wb->get_dib()->get_image(), t);
+		wa[t]->sun_setup(sun, sun_dist, pitch, yaw, spz, spx, spy);
 	}
+	for (t = 0; t < NUM_THREADS; t++)
+        {
+                pthread_create(&threads[t],NULL,raytrace_worker,(void*)wa[t]);
+        }
+
+        for (t = 0; t < NUM_THREADS; t++)
+        {
+                pthread_join(threads[t],NULL);
+                delete wa[t];
+        }
+
+	
 
 	wb->save(); //This stays outside any raytrace operations, or else it won't write the image at all.
 
