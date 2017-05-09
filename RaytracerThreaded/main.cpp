@@ -78,14 +78,87 @@ void point_trans_rot_y(float angle, float* x, float* y, float* z)
 
 struct worker_arguments
 {
-	worker_arguments()
+	vertex* sun;
+	vertex* hit;
+	smd_model_reader* smr;
+	raster_image* img;
+	int x_start;
+        int y_start;
+        int x_end;
+        int y_end;
+        float sun_dist;
+        float pitch;
+        float yaw;
+        float spz;
+        float spx;
+        float spy;
+
+	worker_arguments(vertex* sun, smd_model_reader* smrx, raster_image* imgx, int thread_index, int number_of_threads, int resolution, float spread)
 	{
+		sun = vert;
+		hit = new vertex();
+		smr = smrx;
+		img = imgx;
+		x_start = 0;
+		y_start = thread_index*resolution/number_of_threads;
+		x_end = resolution;
+		y_end = (thread_index+1)*resolution/number_of_threads;
+	}
+	
+	void sun_setup(float sun_distx, float pitchx, float yawx, float spzx, float spxx, float spyx)
+	{
+		sun_dist = sun_distx;
+		pitch = pitchx;
+		yaw = yawx;
+		spz = spzx;
+		spx = spxx;
+		spy = spyx;
 	}
 };
 
 void* raytrace_worker(void* arguments)
 {
-	
+	worker_arguments* args = (worker_arguments*)arguments;
+	vertex* hit;
+	vertes* sun;
+	for (int py = args->y_start; py < args->y_end; py++)
+        {
+                for (int px = args->x_start; px < args->x_end; px++) //Create several rays.
+                {
+			
+			
+                        float ox, oy, oz;
+                        ox = 0.0f; oy = (float)(px-(resolution/2))/(resolution/8)*spread; oz = (float)(py-(resolution/2))/(resolution/8)*spread;
+                        point_trans_rot_y(-pitch,&ox,&oy,&oz);
+                        point_trans_rot_z(yaw,&ox,&oy,&oz);
+                        (*sun).x = spx + ox;
+                        (*sun).y = spy + oy;
+                        (*sun).z = spz + oz;
+
+                        for (unsigned int i = 0; i < smr->get_triangle_count(); i++) //Check each triangle against ray.
+                        {
+                                float dist;
+                                bool rayhit = raytracer::get_intersection(sun, smr->get_triangle(i), hit, &dist);
+
+                                if (rayhit)
+                                {
+                                        if (dist < closest_tri || closest_tri < 0)
+                                        {
+                                                raytracer::transform_trace_to_uv(smr->get_triangle(i), hit);
+                                                closest_tri = dist;
+                                        }
+                                }
+                        }
+
+                        if (closest_tri > 0) //Evaluates to false if we didn't hit anything.
+                        {
+                                wb->get_dib()->get_image()->set_pixel((unsigned int)floor(hit->u*tex_width), (unsigned int)floor(tex_height-hit->v*tex_height), 0xffffff);
+                        }
+
+                        closest_tri = -1.0f;
+                }
+        }
+
 }
 
 void perform_raytrace(std::string smd_in, std::string bmp_out, int tex_width, int tex_height, float sun_pitch, float sun_yaw)
@@ -108,6 +181,11 @@ void perform_raytrace(std::string smd_in, std::string bmp_out, int tex_width, in
 	vertex* sun = new vertex(spx,spy,spz,sdx,sdy,sdz,0.0f,0.0f);
 	float closest_tri = -1.0f;
 	
+	//call sunsetup for the above
+	//pull in hit and sun because shared not individual
+
+
+
 	for (int py = 0; py < resolution; py++)
 	{
 		for (int px = 0; px < resolution; px++) //Create several rays.
