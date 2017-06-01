@@ -22,10 +22,11 @@
 ## Running
 * ./Raytracer -in "model.smd" -out "texture.bmp"
 
-### Additional Flags
--width [image_width] Def: 512
--height [image_height] Def: 512
--yaw [sun_angle] Def: 15.0
--pitch [sun_angle] Def: 30.0
--resolution [sqrt_of_number_of_rays] Def: 512
--spread [scale] Def: 1.0
+|Additional Flags|
+|----------------|
+|-width [image_width] Def: 512|
+|-height [image_height] Def: 512|
+|-yaw [sun_angle] Def: 15.0|
+|-pitch [sun_angle] Def: 30.0|
+|-resolution [sqrt_of_number_of_rays] Def: 512|
+|-spread [scale] Def: 1.0|
