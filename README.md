@@ -20,4 +20,4 @@
 * "make clean; make" on Linux.
 
 ## Running
-* ./Raytracer -in "model.smd" -out "texture.bmp" -width <image_width> -height <image_height> -yaw <sun_angle> -pitch <sun_angle> -resolution <sqrt_of_number_of_rays> -spread <scale>
+* ./Raytracer -in "model.smd" -out "texture.bmp" -width [image_width] -height [image_height] -yaw [sun_angle] -pitch [sun_angle] -resolution [sqrt_of_number_of_rays] -spread [scale]
