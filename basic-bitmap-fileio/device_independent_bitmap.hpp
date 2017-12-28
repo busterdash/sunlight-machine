@@ -9,9 +9,8 @@
 #ifndef _DEVICE_BITMAP_HPP
 #define _DEVICE_BITMAP_HPP
 
-#include "binary_writer.hpp"
+#include "binary_rw.hpp"
 #include "raster_image.hpp"
-using namespace std;
 
 class device_independent_bitmap
 {
@@ -31,10 +30,12 @@ class device_independent_bitmap
 	public:
 		device_independent_bitmap(unsigned int width, unsigned int height);
 		~device_independent_bitmap();
-		void save(ofstream* f);
+		void save(std::ofstream* f);
 		raster_image* get_image();
 		int get_header_size();
 		int get_image_size();
+		int get_image_width();
+		int get_image_height();
 };
 
 #endif

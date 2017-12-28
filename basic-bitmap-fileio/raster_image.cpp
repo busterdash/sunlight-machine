@@ -13,9 +13,9 @@ raster_image::raster_image(unsigned int width, unsigned int height)
 	{
 		for (unsigned int x = 0; x < width; x++)
 		{
-			image_red_array[y*width+x] = 80;
-			image_green_array[y*width+x] = 80;
-			image_blue_array[y*width+x] = 80;
+			image_red_array[y*width+x] = 0;
+			image_green_array[y*width+x] = 0;
+			image_blue_array[y*width+x] = 0;
 		}
 	}
 }

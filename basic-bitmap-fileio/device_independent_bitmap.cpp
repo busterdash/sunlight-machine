@@ -22,19 +22,19 @@ device_independent_bitmap::~device_independent_bitmap()
 	delete img;
 }
 
-void device_independent_bitmap::save(ofstream* f)
+void device_independent_bitmap::save(std::ofstream* f)
 {
-	binary_writer::write(f, header_size);
-	binary_writer::write(f, bitmap_width);
-	binary_writer::write(f, bitmap_height);
-	binary_writer::write(f, color_plane_count);
-	binary_writer::write(f, bits_per_pixel);
-	binary_writer::write(f, compression_method);
-	binary_writer::write(f, bitmap_data_size);
-	binary_writer::write(f, hor_pixel_per_meter);
-	binary_writer::write(f, ver_pixel_per_meter);
-	binary_writer::write(f, palette_color_count);
-	binary_writer::write(f, important_color_count);
+	binary_rw::write(f, header_size);
+	binary_rw::write(f, bitmap_width);
+	binary_rw::write(f, bitmap_height);
+	binary_rw::write(f, color_plane_count);
+	binary_rw::write(f, bits_per_pixel);
+	binary_rw::write(f, compression_method);
+	binary_rw::write(f, bitmap_data_size);
+	binary_rw::write(f, hor_pixel_per_meter);
+	binary_rw::write(f, ver_pixel_per_meter);
+	binary_rw::write(f, palette_color_count);
+	binary_rw::write(f, important_color_count);
 	
 	color_component* r = img->get_image_red_array();
 	color_component* g = img->get_image_green_array();
@@ -70,4 +70,14 @@ int device_independent_bitmap::get_header_size()
 int device_independent_bitmap::get_image_size()
 {
 	return bitmap_height*(int)floor((double)(bits_per_pixel*bitmap_width+31)/32.0)*4;
+}
+
+int device_independent_bitmap::get_image_width()
+{
+	return (int)bitmap_width;
+}
+
+int device_independent_bitmap::get_image_height()
+{
+	return (int)bitmap_height;
 }
