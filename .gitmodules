@@ -1,0 +1,3 @@
+[submodule "basic-bitmap-fileio"]
+	path = basic-bitmap-fileio
+	url = https://github.com/busterdash/basic-bitmap-fileio.git
