@@ -103,6 +103,7 @@ void perform_raytrace(std::string smd_in, std::string bmp_out, int tex_width, in
 {
 	long long start_var_creation = start_timer();
 	windows_bitmap* wb = new windows_bitmap(bmp_out,tex_width,tex_height);
+	wb->get_dib()->get_image()->clear_to_color(0x5f5f5f);
 	smd_model_reader* smr = new smd_model_reader(smd_in);
 	
 	const float radianizer = PI/180;
