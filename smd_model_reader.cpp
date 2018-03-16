@@ -110,12 +110,12 @@ float smd_model_reader::get_max_coordinate()
 			
 			if (tri_list[i]->v[j]->y > max)
 			{
-				max = tri_list[i]->v[j]->x;
+				max = tri_list[i]->v[j]->y;
 			}
 			
 			if (tri_list[i]->v[j]->z > max)
 			{
-				max = tri_list[i]->v[j]->x;
+				max = tri_list[i]->v[j]->z;
 			}
 		}
 	}

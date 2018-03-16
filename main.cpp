@@ -9,8 +9,8 @@
 #include "basic-bitmap-fileio/windows_bitmap.hpp"
 #include "smd_model_reader.hpp"
 
-float const PI = 3.141593f;
 int resolution = 512;
+float const PI = 3.141593f;
 float spread = 1.0f;
 
 void point_trans_rot_z(float angle, float* x, float* y, float* z);
@@ -26,14 +26,13 @@ long long start_timer()
 	return tv.tv_sec * 1000000 + tv.tv_usec;
 }
 
-
 //Prints the time elapsed since the specified time.
 long long stop_timer(long long start_time, std::string name)
 {
 	struct timeval tv;
 	gettimeofday(&tv, NULL);
 	long long end_time = tv.tv_sec * 1000000 + tv.tv_usec;
-        std::cout << std::setprecision(5);	
+    std::cout << std::setprecision(5);	
 	std::cout << name << ": " << ((float) (end_time - start_time)) / (1000 * 1000) << " sec\n";
 	return end_time - start_time;
 }
@@ -66,10 +65,8 @@ int main(int argc, char** argv)
 		else if (!strcasecmp(argv[i],"-spread"))
 			spread = atof(argv[i+1]);
 	}
-
-	long long start = start_timer();	
-	perform_raytrace(inpath,outpath,img_width,img_height,pitch,yaw);
-	stop_timer(start,"Time taken for serial");
+	
+	perform_raytrace(inpath, outpath, img_width, img_height, pitch, yaw);
 	return 0;
 }
 
@@ -101,47 +98,58 @@ void point_trans_rot_y(float angle, float* x, float* y, float* z)
 
 void perform_raytrace(std::string smd_in, std::string bmp_out, int tex_width, int tex_height, float sun_pitch, float sun_yaw)
 {
-	long long start_var_creation = start_timer();
-	windows_bitmap* wb = new windows_bitmap(bmp_out,tex_width,tex_height);
+	windows_bitmap* wb = new windows_bitmap(bmp_out, tex_width, tex_height);
 	wb->get_dib()->get_image()->clear_to_color(0x5f5f5f);
 	smd_model_reader* smr = new smd_model_reader(smd_in);
 	
-	const float radianizer = PI/180;
+	const float radianizer = PI / 180;
 	float sun_dist = smr->get_max_coordinate() + 1.0f; //Add one so that sun rays are a little farther than geometry.
 	float pitch = sun_pitch - 90.0f;
 	float inv_pitch = sun_pitch + 90.0f;
 	float yaw = sun_yaw + 180.0f;
-	float sdx = cos(yaw*radianizer) * cos(pitch*radianizer); //Sun direction.
+	float closest_tri = -1.0f;
+	
+	//Sun direction.
+	float sdx = cos(yaw*radianizer) * cos(pitch*radianizer);
 	float sdy = sin(yaw*radianizer) * cos(pitch*radianizer);
 	float sdz = sin(pitch*radianizer);
-	float spz = sin(inv_pitch*radianizer) * sun_dist;
+	
+	//Sun position.
 	float spx = cos(yaw*radianizer) * cos(inv_pitch*radianizer) * sun_dist;
 	float spy = sin(yaw*radianizer) * cos(inv_pitch*radianizer) * sun_dist;
+	float spz = sin(inv_pitch*radianizer) * sun_dist;
+	
 	vertex* hit = new vertex();
-	vertex* sun = new vertex(spx,spy,spz,sdx,sdy,sdz,0.0f,0.0f);
-	float closest_tri = -1.0f;
-	stop_timer(start_var_creation, "Variable init time");
-
+	vertex* sun = new vertex(spx, spy, spz, sdx, sdy, sdz, 0.0f, 0.0f);
 	long long start_raytracing = start_timer();
-	for (int py = 0; py < resolution; py++)
+	
+	int prev_progress = 0;
+	int progress = 0;
+	
+	//Create a grid of rays.
+	for (int py = 0; py < resolution; py++) 
 	{
-		for (int px = 0; px < resolution; px++) //Create several rays.
+		for (int px = 0; px < resolution; px++)
 		{
-			float ox, oy, oz;
-			ox = 0.0f; oy = (float)(px-(resolution/2))/(resolution/8)*spread; oz = (float)(py-(resolution/2))/(resolution/8)*spread;
+			//Calculate location of the ray's spawn position within the grid.
+			float ox = 0.0f;
+			float oy = (float)(px-(resolution/2))/(resolution/8)*spread;
+			float oz = (float)(py-(resolution/2))/(resolution/8)*spread;
 			point_trans_rot_y(-pitch,&ox,&oy,&oz);
 			point_trans_rot_z(yaw,&ox,&oy,&oz);
 			(*sun).x = spx + ox;
 			(*sun).y = spy + oy;
 			(*sun).z = spz + oz;
 			
-			for (unsigned int i = 0; i < smr->get_triangle_count(); i++) //Check each triangle against ray.
+			//Check each triangle against a ray to determine which triangle gets illuminated.
+			for (unsigned int i = 0; i < smr->get_triangle_count(); i++)
 			{
 				float dist;
 				bool rayhit = raytracer::get_intersection(sun, smr->get_triangle(i), hit, &dist);
 			
 				if (rayhit)
 				{
+					//If we found a closer triangle or we haven't found one yet...
 					if (dist < closest_tri || closest_tri < 0)
 					{
 						raytracer::transform_trace_to_uv(smr->get_triangle(i), hit);
@@ -152,16 +160,27 @@ void perform_raytrace(std::string smd_in, std::string bmp_out, int tex_width, in
 			
 			if (closest_tri > 0) //Evaluates to false if we didn't hit anything.
 			{
-				wb->get_dib()->get_image()->set_pixel((unsigned int)floor(hit->u*tex_width), (unsigned int)floor(tex_height-hit->v*tex_height), 0xffffff);
+				wb->get_dib()->get_image()->set_pixel(
+					(unsigned int)floor(hit->u*tex_width),
+					(unsigned int)floor(tex_height-hit->v*tex_height),
+					0xffffff
+				);
 			}
 			
-			closest_tri = -1.0f;
+			closest_tri = -1.0f; //Reset for the next ray.
 		}
+		
+		if (prev_progress != progress)
+		{
+			std::cout << "Progress: " << prev_progress << "%\r";
+			progress = prev_progress;
+		}
+		
+		prev_progress = floor(((float)py / (float)resolution) * 10) * 10;
 	}
-	stop_timer(start_raytracing, "raytracing serial time");
-
-	wb->save(); //This stays outside any raytrace operations, or else it won't write the image at all.
-
+	
+	stop_timer(start_raytracing, "Ray-simulation time");
+	wb->save(); //Write the image file.
 	delete wb;
 	delete smr;
 	delete sun;
