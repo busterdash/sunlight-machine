@@ -176,7 +176,7 @@ void perform_raytrace(std::string smd_in, std::string bmp_out, int tex_width, in
 			progress = prev_progress;
 		}
 		
-		prev_progress = floor(((float)py / (float)resolution) * 10) * 10;
+		prev_progress = (floor(((float)py / (float)resolution) * 20.0f) / 20.0f) * 100.0f;
 	}
 	
 	stop_timer(start_raytracing, "Ray-simulation time");
