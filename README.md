@@ -1,19 +1,14 @@
-# Sunlight Machine
-
-### There are two versions of this project:
-* Serial - Runs on Windows or Linux.
-* Threaded - Runs exclusively on Linux; uses POSIX threads. To use, please switch out main.cpp with the version within the 'threaded' folder. Must then be compiled with the flag: ```-lpthread```
+# The Sunlight Machine
 
 ## Components
 
 ### SMD Reader:
 * So far it doesn't keep track of bones, it will only read root bones.
 * It doesn't care about materials. For this project we're only concerned about geometry.
-* Accessing a value is done like this: ```triangle->v[0]->u;```
 
-### Bitmap FileIO:
+### Basic Bitmap File I/O:
 * Submodule can be read about here: https://github.com/busterdash/basic-bitmap-fileio
-* Writes windows bitmaps with a DIB of type ```BITMAPINFOHEADER```.
+* Writes windows bitmaps with of type ```BITMAPINFOHEADER```.
 * Images compatible with Windows 3.1 and above.
 
 ### Raytracer:
@@ -28,11 +23,11 @@ git submodule update --init
 ```
 
 ## Compiling
-* For simplicity, use Orwell Dev-C++ to compile on Windows.
+* For simplicity, I use Orwell Dev-C++ to compile on Windows.
 * On Linux, a makefile is provided for compiling with the GNU C++ Compiler.
 
-## Running
-* ./sun.exe -in "model.smd" -out "texture.bmp"
+## Testing
+* ```./sun.exe -in "house.smd" -out "texture.bmp"```
 
 |Additional Flags|Default Value|
 |----------------|-------------|
@@ -42,3 +37,5 @@ git submodule update --init
 |-pitch [sun_angle]|30.0|
 |-resolution [sqrt_of_number_of_rays]|512|
 |-spread [scale]|1.0|
+
+This program is available to you as free software licensed under the GNU General Public License (GPL-3.0-or-later)
