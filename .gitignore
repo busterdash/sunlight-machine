@@ -3,4 +3,3 @@ sun/*.o
 sun/*.win
 sun/sun.layout
 sun/sun_private*
-bitmap-machine/*.o
