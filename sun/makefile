@@ -1,4 +1,4 @@
-BM_DIR = bitmap-machine
+BM_DIR = ../bitmap-machine
 include $(BM_DIR)/make_sm_vars
 OBJECTS = main.o raytracer.o smd_model_reader.o geometry.o $(BM_OBJECTS)
 TARGET = sun

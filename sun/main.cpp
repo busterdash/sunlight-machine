@@ -28,7 +28,7 @@
 #include <sys/time.h>
 
 #include "raytracer.hpp"
-#include "bitmap-machine/windows_bitmap.hpp"
+#include "../bitmap-machine/windows_bitmap.hpp"
 #include "smd_model_reader.hpp"
 
 int resolution = 512;
