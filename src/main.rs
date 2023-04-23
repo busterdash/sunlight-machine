@@ -1,9 +1,9 @@
 /*==============================================================================
 
-	main.rs
-	Copyright 2023 Buster Schrader
+    main.rs
+    Copyright 2023 Buster Schrader
 
-	This file is part of The Sunlight Machine.
+    This file is part of The Sunlight Machine.
 
     The Sunlight Machine is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -18,13 +18,14 @@
     You should have received a copy of the GNU General Public License
     along with The Sunlight Machine.  If not, see
     <https://www.gnu.org/licenses/>.
-	
+    
 ==============================================================================*/
 
 #![doc = include_str!("../README.md")]
 
 mod geometry;
 mod smd_reader;
+mod ray_tracer;
 
 use smd_reader::*;
 
