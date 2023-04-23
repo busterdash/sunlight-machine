@@ -59,21 +59,25 @@ impl Vertex {
     }
 
     /// Rotates this vertex about the origin's Y-axis.
-    pub fn rotate_y(&mut self, angle: f64) {
+    pub fn rotate_y(&mut self, angle: f64) -> Self {
         let o: Vertex = self.clone();
-        let pc: f64 = deg_to_rad(angle).cos();
-        let ps: f64 = deg_to_rad(angle).sin();
+        let rad: f64 = deg_to_rad(angle);
+        let pc: f64 = rad.cos();
+        let ps: f64 = rad.sin();
         self.x = (o.x * pc) + (o.z * ps);
         self.z = (o.x * -ps) + (o.z * pc);
+        return *self;
     }
 
     /// Rotates this vertex about the origin's Z-axis.
-    pub fn rotate_z(&mut self, angle: f64) {
+    pub fn rotate_z(&mut self, angle: f64) -> Self{
         let o: Vertex = self.clone();
-        let pc: f64 = deg_to_rad(angle).cos();
-        let ps: f64 = deg_to_rad(angle).sin();
+        let rad: f64 = deg_to_rad(angle);
+        let pc: f64 = rad.cos();
+        let ps: f64 = rad.sin();
         self.x = (o.x * pc) + (o.y * -ps);
         self.y = (o.x * ps) + (o.y * pc);
+        return *self;
     }
 }
 
@@ -174,6 +178,11 @@ impl Triangle {
 #[cfg(test)]
 mod tests {
     use super::*;
+    const ACC: i8 = 8;
+
+    fn epsilon(value: f64, accuracy: i8) -> f64 {
+        (value * 10_f64.powf(accuracy as f64)).floor() * 10_f64.powf(-accuracy as f64)
+    }
 
     #[test]
     fn triangle_construction() {
@@ -195,5 +204,53 @@ mod tests {
     #[test]
     fn degree_radian_conversion() {
         assert_eq!(rad_to_deg(deg_to_rad(180.0)), 180.0);
+    }
+
+    #[test]
+    fn vertex_distance_formulas() {
+        assert_eq!(
+            epsilon(Vertex::new(18.0, -31.0, 93.0).dist_2d(Vertex::new(-77.0, -11.0, 55.0)), ACC),
+            epsilon(97.082439195, ACC)
+        );
+        assert_eq!(
+            epsilon(Vertex::new(8.0, 19.0, 12.0).dist_3d(Vertex::new(-52.0, 32.0, -92.0)), ACC),
+            epsilon(120.768373343, ACC)
+        );
+    }
+
+    #[test]
+    fn vertex_rotation() {
+        let mut v = Vertex::new(3.0, 4.0, 5.0);
+        v.rotate_z(90.0);
+        assert_eq!(epsilon(v.x, ACC), -4.0);
+        assert_eq!(epsilon(v.y, ACC), 3.0);
+        assert_eq!(epsilon(v.z, ACC), 5.0);
+        v.rotate_y(90.0);
+        assert_eq!(epsilon(v.x, ACC), 5.0);
+        assert_eq!(epsilon(v.y, ACC), 3.0);
+        assert_eq!(epsilon(v.z, ACC), 4.0);
+    }
+
+    #[test]
+    fn vector_dot_product() {
+        assert_eq!(
+            epsilon(Vector3D::dot_product(
+                Vector3D::new(-0.392725, 0.000000, 0.919656),
+                Vector3D::new(0.653218, 0.655690, 0.378582)
+            ), ACC),
+            epsilon(0.091630169, ACC)
+        );
+    }
+
+    #[test]
+    fn vector_cross_product() {
+        let v = Vector3D::cross_product(
+            Vector3D::new(-1.0, 0.0, 0.0),
+            Vector3D::new(0.0, -1.0, 0.0)
+        );
+        // right-hand rule
+        assert_eq!(v.x, 0.0);
+        assert_eq!(v.y, 0.0);
+        assert_eq!(v.z, 1.0);
     }
 }
