@@ -1,19 +1,12 @@
 # The Sunlight Machine
 
-See sun directory for additional readme content about available classes.
+This is a simple light simulation tool that "bakes" the appearance of sunlight
+and shadows to a texture which is applied to a 3D model.
 
-## Cloning
-```
-git clone https://github.com/busterdash/sunlight-machine
-cd sunlight-machine
-git submodule update --init
-```
+Converted to Rust from C++, see commit 665cc3c on master for the original
+implementation. 
 
-## Compiling
-* A Dev-C++ project file has been provided but is not necessary for compilation.
-* A makefile has been provided for compiling on either Windows or GNU/Linux operating systems.
-
-## Testing
+## Execution
 * ```./sun.exe -in "house.smd" -out "texture.png"```
 
 |Additional Flags|Default Value|
